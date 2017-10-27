@@ -1,0 +1,120 @@
+ext{
+    mysqlVersion="6.0.2"
+    jacksonVersion="2.7.4"
+    springSessionVersion="1.3.1.RELEASE"
+}
+/**
+ * gradle构建脚本
+ */
+buildscript{
+    //资源属性
+    ext{
+        springVersion = "4.2.6.RELEASE"
+        springBootVersion = "1.5.2.RELEASE"
+        springRepo = "http://maven.springframework.org/release/org/springframework/"
+        aliyunRepo = "http://maven.aliyun.com/nexus/content/groups/public/"
+    }
+    //依赖包仓库
+    repositories{
+        mavenLocal()
+        mavenCentral()
+        maven { url "${aliyunRepo}" }
+        maven { url "${springRepo}" }
+    }
+    //依赖
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+/**
+ * 根项目配置
+ */
+allprojects {
+    //公共插件
+    apply plugin: "idea"
+    apply plugin: "maven"
+
+    //项目信息
+    group 'gyw.practice'
+    version '1.0-SNAPSHOT'
+
+    //仓库配置
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "${aliyunRepo}" }
+        maven { url "${springRepo}" }
+    }
+    //idea插件配置
+    idea {
+        module {
+            inheritOutputDirs = false
+            outputDir = file("$buildDir/classes/main/")
+        }
+    }
+}
+
+/**
+ * 所有叶子节点模块都是java模块的配置
+ */
+configure(isJavaProject()) {
+    apply plugin: "java"
+    apply plugin: 'spring-boot'
+
+
+    //JVM 版本号要求
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    //java编译的时候缺省状态下会因为中文字符而失败
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = "UTF-8"
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Dalston.SR4'
+        }
+    }
+    //依赖
+    dependencies {
+        compile fileTree(dir: "libs", include: ["*.jar"])
+
+        //spring-boot-admin-client
+        compile("de.codecentric:spring-boot-admin-starter-client:+")
+
+        compile("mysql:mysql-connector-java:${mysqlVersion}")
+        //不使用默认的tomcat服务器
+        compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
+            exclude group: "org.springframework.boot", "module": "spring-boot-starter-tomcat"
+        }
+        compile("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+        //使用jetty替代tomcat
+        compile("org.springframework.boot:spring-boot-starter-jetty:$springBootVersion")
+//        compile("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
+        compile("org.springframework.cloud:spring-cloud-starter-eureka-server")
+        //test
+        testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+        testCompile("com.jayway.jsonpath:json-path")
+    }
+
+    //打包源代码
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = "sources"
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+
+    // 所有需要忽略的包定义在此
+    configurations {
+        all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
+        all*.exclude group: "commons-logging"
+        all*.exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+    }
+}
+
+def isJavaProject() {
+    return subprojects.findAll {
+        it.childProjects.size() == 0 && new File(it.projectDir, "src").exists() && it.name.indexOf("web") < 0
+    }
+}

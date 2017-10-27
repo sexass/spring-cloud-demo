@@ -1,0 +1,4 @@
+rootProject.name = 'spring-cloud-demo'
+include 'spring-cloud-demo-eureka'
+include 'spring-cloud-item-service'
+
