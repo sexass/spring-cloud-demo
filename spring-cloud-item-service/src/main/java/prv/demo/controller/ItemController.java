@@ -1,5 +1,6 @@
 package prv.demo.controller;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,8 @@ public class ItemController {
     ItemService itemService;
 
     @GetMapping("/{id}")
-    public ItemModel findById(@PathVariable Long id){
-        return itemService.findOne(id);
+    public String findById(@PathVariable Long id){
+        Gson gson=new Gson();
+        return gson.toJson(itemService.findOne(id));
     }
 }
