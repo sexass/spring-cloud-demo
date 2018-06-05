@@ -78,18 +78,19 @@ configure(isJavaProject()) {
         compile fileTree(dir: "libs", include: ["*.jar"])
 
         //spring-boot-admin-client
-        compile("de.codecentric:spring-boot-admin-starter-client:+")
+//        compile("de.codecentric:spring-boot-admin-starter-client:+")
 
         compile("mysql:mysql-connector-java:${mysqlVersion}")
         //不使用默认的tomcat服务器
         compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion") {
             exclude group: "org.springframework.boot", "module": "spring-boot-starter-tomcat"
         }
-        compile("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+//        compile("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
         //使用jetty替代tomcat
         compile("org.springframework.boot:spring-boot-starter-jetty:$springBootVersion")
 //        compile("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
         compile("org.springframework.cloud:spring-cloud-starter-eureka-server")
+        compile("org.hibernate:hibernate-java8:5.1.2.Final")
         //test
         testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
         testCompile("com.jayway.jsonpath:json-path")
