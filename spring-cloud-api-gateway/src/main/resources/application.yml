@@ -1,0 +1,19 @@
+spring.application.name: api-gateway
+server.port: 5555
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/    # 指定注册中心的地址
+  instance:
+    preferIpAddress: true
+zuul:
+  routes:
+    order-service:
+      path: /order/**
+      serviceId: order-service
+    item-service:
+      path: /item/**
+      serviceId: item-service
+
+
