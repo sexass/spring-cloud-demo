@@ -1,0 +1,6 @@
+server:
+  port: 10014
+spring:
+  application:
+    name: cloud-stream-service
+

@@ -4,4 +4,5 @@ include 'spring-cloud-item-service'
 include 'spring-cloud-order-service'
 include 'spring-cloud-order-feign'
 include 'spring-cloud-api-gateway'
+include 'spring-cloud-stream'
 
